@@ -1,2 +1,2 @@
-# awsS3
-Collection of methods to perform operations on AWS S3 buckets. 
+# push2Storage
+Method to upload to different cloud storage such as s3, etc. 
