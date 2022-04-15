@@ -2,6 +2,7 @@ package upload
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/ayush5588/push2Storage/storage/AWS/s3"
 )
@@ -24,22 +25,25 @@ func prepareResp(statuscode int64, message string, err error) (uploadResponse) {
 
 // Upload func calls the appropriate method for given storage type in order to upload the given file
 func Upload(storageType string, accountInfo map[string]string, desiredFileName string, filePath string) uploadResponse {
+	fmt.Println("Check")
 	if storageType == "" {
-		return prepareResp(400,"", errors.New("No storage type specified"))
+		return prepareResp(400,"", errors.New("no storage type specified"))
 	}
 
 	if filePath == "" {
-		return prepareResp(400,"", errors.New("No file to upload"))
+		return prepareResp(400,"", errors.New("no file to upload"))
 	}
 
 	switch storageType {
 	case "aws":
 		s3Client, err := s3.Client(accountInfo)
 		if err != nil {
+			fmt.Println(err)
 			return prepareResp(500,"", err)
 		}
 		err = s3Client.UploadToStorage(desiredFileName, filePath)
 		if err != nil {
+			fmt.Println(err)
 			return prepareResp(500,"", err)
 		}
 	}

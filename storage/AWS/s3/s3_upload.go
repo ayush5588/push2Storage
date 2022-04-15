@@ -1,11 +1,11 @@
 package s3
 
 import (
+	"bytes"
 	"context"
-	"fmt"
+	//"fmt"
 	"io/ioutil"
 	"os"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -37,7 +37,7 @@ func Client(accountInfo map[string]string) (*s3Client, error) {
 
 }
 
-func createFile(desiredFileName string) (*os.File, error) {
+func createFile(desiredFileName string, fileContent []byte) (*os.File, error) {
 	var file *os.File
 	var err error
 
@@ -46,12 +46,12 @@ func createFile(desiredFileName string) (*os.File, error) {
 		if err != nil {
 			return nil, err
 		}
-	} else {
-		file, err = os.Create("file " + time.Now().String())
+
+		_, err = file.WriteString(string(fileContent))
 		if err != nil {
 			return nil, err
 		}
-	}
+	} 
 
 	return file, nil
 }
@@ -65,33 +65,37 @@ func (s3Client *s3Client) UploadToStorage(desiredFileName string, filePath strin
 		return err
 	}
 	
-	file, err := createFile(desiredFileName)
+	file, err := createFile(desiredFileName, fileContent)
 	if err != nil {
 		return err
 	}
 
-	defer file.Close()
 
+	file, err = os.Open(file.Name())
+    if err != nil {
+        return err
+    }
+    defer file.Close()
 
-	_, err = file.WriteString(string(fileContent))
-	if err != nil {
-		return err
-	}
-
+    // get the file size and read
+    // the file content into a buffer
+    fileInfo, _ := file.Stat()
+    var size = fileInfo.Size()
+    buffer := make([]byte, size)
+    file.Read(buffer)
 
 
 	uploadClient := manager.NewUploader(s3Client.client)
 
-	result, err := uploadClient.Upload(context.TODO(), &s3.PutObjectInput{
+
+	_, err = uploadClient.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(s3Client.bucket),
 		Key:    aws.String(file.Name()),
-		Body:   file,
+		Body:   bytes.NewReader(buffer),
 	})
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(result)
 
 	return nil
 	
