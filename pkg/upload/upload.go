@@ -23,19 +23,22 @@ func prepareResp(statuscode int64, message string, err error) (uploadResponse) {
 }
 
 // Upload func calls the appropriate method for given storage type in order to upload the given file
-func Upload(storageType string, accountInfo map[string]string, fileName string, fileToUpload []byte) uploadResponse {
+func Upload(storageType string, accountInfo map[string]string, desiredFileName string, filePath string) uploadResponse {
 	if storageType == "" {
 		return prepareResp(400,"", errors.New("No storage type specified"))
 	}
 
-	if len(fileToUpload) == 0 {
+	if filePath == "" {
 		return prepareResp(400,"", errors.New("No file to upload"))
 	}
 
 	switch storageType {
 	case "aws":
-		s3Client := s3.Client(accountInfo)
-		err := s3Client.UploadToStorage(fileName, fileToUpload)
+		s3Client, err := s3.Client(accountInfo)
+		if err != nil {
+			return prepareResp(500,"", err)
+		}
+		err = s3Client.UploadToStorage(desiredFileName, filePath)
 		if err != nil {
 			return prepareResp(500,"", err)
 		}
