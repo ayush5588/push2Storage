@@ -40,6 +40,9 @@ func Upload(storageType string, accountInfo map[string]string, desiredFileName s
 			fmt.Println(err)
 			return util.PrepareResp(500,"", err, "error in uploading file to S3")
 		}
+	
+	default:
+		return util.PrepareResp(404, "implementation for storage type " + storageType + " yet to be done", nil, "")
 	}
 
 	return util.PrepareResp(200, "file uploaded successfully", nil, "")
