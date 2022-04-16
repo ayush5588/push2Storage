@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+
 	"github.com/ayush5588/push2Storage/pkg/upload"
 )
 
@@ -16,8 +18,9 @@ func uploadToS3(w http.ResponseWriter, r *http.Request) {
 
 
 	result := upload.Upload("aws", mp, "random.txt", `full-path-to-file`)
-	fmt.Println(result)
-	fmt.Fprintf(w, "Success!!")
+	w.Header().Set("Content-Type", "application/json") 
+	json.NewEncoder(w).Encode(result) 
+
 
 } 
 
