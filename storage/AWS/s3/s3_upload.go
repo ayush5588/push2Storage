@@ -3,16 +3,16 @@ package s3
 import (
 	"bytes"
 	"context"
-	"errors"
 
-	"io/ioutil"
-	"os"
+
+	"github.com/ayush5588/push2Storage/internal/util"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+
 )
 
 
@@ -38,64 +38,14 @@ func Client(accountInfo map[string]string) (*s3Client, error) {
 
 }
 
-func createFile(desiredFileName string, fileContent []byte) (*os.File, error) {
-	var file *os.File
-	var err error
-
-	if desiredFileName != "" {
-		file, err = os.Create(desiredFileName)
-		if err != nil {
-			return nil, err
-		}
-
-		_, err = file.WriteString(string(fileContent))
-		if err != nil {
-			return nil, err
-		}
-	} 
-
-	return file, nil
-}
 
 // UploadToStorage read the file from the given path and uploads to s3
-func (s3Client *s3Client) UploadToStorage(desiredFileName string, filePath string) (error) {
+func (s3Client *s3Client) UploadToStorage(filePath string) (error) {
 	// Read the file from the given path into a new file. 
 	// Upload the file to the bucket. 
-	fileContent, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return err
-	}
 	
-	file, err := createFile(desiredFileName, fileContent)
-	if err != nil {
-		return err
-	}
-
-
-	file, err = os.Open(file.Name())
-    if err != nil {
-        return err
-    }
-
 	
-    defer file.Close()
-
-
-    fileInfo, err := file.Stat()
-	if err != nil {
-		return err
-	}
-
-	// get the size of the file
-    size := fileInfo.Size()
-    buffer := make([]byte, size)
-
-	// read the file contents into a buffer
-    readFileSize, err := file.Read(buffer)
-
-	if readFileSize != int(size) {
-		return errors.New("file not read completely")
-	}
+	fileBuffer, fileName, err := util.PrepareFile(filePath)
 	if err != nil {
 		return err
 	}
@@ -106,8 +56,8 @@ func (s3Client *s3Client) UploadToStorage(desiredFileName string, filePath strin
 
 	_, err = uploadClient.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(s3Client.bucket),
-		Key:    aws.String(file.Name()),
-		Body:   bytes.NewReader(buffer),
+		Key:    aws.String(fileName),
+		Body:   bytes.NewReader(fileBuffer),
 	})
 	if err != nil {
 		return err

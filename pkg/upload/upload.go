@@ -19,7 +19,7 @@ var (
 
 
 // Upload func calls the appropriate method for given storage type in order to upload the given file
-func Upload(storageType string, accountInfo map[string]string, desiredFileName string, filePath string) (util.UploadResponse) {
+func Upload(storageType string, accountInfo map[string]string, filePath string) (util.UploadResponse) {
 	if storageType == "" {
 		return util.PrepareResp(400,"", ErrEmptyStorageType, "storage field cannot be empty")
 	}
@@ -35,7 +35,7 @@ func Upload(storageType string, accountInfo map[string]string, desiredFileName s
 			fmt.Println(err)
 			return util.PrepareResp(500,"", err, "error in generating a S3 client")
 		}
-		err = s3Client.UploadToStorage(desiredFileName, filePath)
+		err = s3Client.UploadToStorage(filePath)
 		if err != nil {
 			fmt.Println(err)
 			return util.PrepareResp(500,"", err, "error in uploading file to S3")
