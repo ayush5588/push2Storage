@@ -4,38 +4,28 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/ayush5588/push2Storage/internal/util"
+
 	"github.com/ayush5588/push2Storage/storage/AWS/s3"
 )
 
 
 var (
-	ErrEmptyStorageType error = errors.New("storage cannot be empty")
+	ErrEmptyStorageType error = errors.New("storage field cannot be empty")
 	ErrEmptyFilePath error = errors.New("file path cannot be empty")
 )
 
 
-type uploadResponse struct {
-	Statuscode int64
-	Message    string
-	Err        error
-}
 
-func prepareResp(statuscode int64, message string, err error) (uploadResponse) {
-	return uploadResponse{
-		statuscode,
-		message,
-		err,
-	}
-}
 
 // Upload func calls the appropriate method for given storage type in order to upload the given file
-func Upload(storageType string, accountInfo map[string]string, desiredFileName string, filePath string) (uploadResponse) {
+func Upload(storageType string, accountInfo map[string]string, desiredFileName string, filePath string) (util.UploadResponse) {
 	if storageType == "" {
-		return prepareResp(400,"", ErrEmptyStorageType)
+		return util.PrepareResp(400,"", ErrEmptyStorageType, "storage field cannot be empty")
 	}
 
 	if filePath == "" {
-		return prepareResp(400,"", ErrEmptyFilePath)
+		return util.PrepareResp(400,"", ErrEmptyFilePath, "file path cannot be empty")
 	}
 
 	switch storageType {
@@ -43,14 +33,14 @@ func Upload(storageType string, accountInfo map[string]string, desiredFileName s
 		s3Client, err := s3.Client(accountInfo)
 		if err != nil {
 			fmt.Println(err)
-			return prepareResp(500,"", err)
+			return util.PrepareResp(500,"", err, "error in generating a S3 client")
 		}
 		err = s3Client.UploadToStorage(desiredFileName, filePath)
 		if err != nil {
 			fmt.Println(err)
-			return prepareResp(500,"", err)
+			return util.PrepareResp(500,"", err, "error in uploading file to S3")
 		}
 	}
 
-	return prepareResp(200, "file uploaded successfully", nil)
+	return util.PrepareResp(200, "file uploaded successfully", nil, "")
 }
