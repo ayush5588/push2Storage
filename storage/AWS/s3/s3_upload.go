@@ -3,7 +3,8 @@ package s3
 import (
 	"bytes"
 	"context"
-	//"fmt"
+	"errors"
+
 	"io/ioutil"
 	"os"
 
@@ -75,14 +76,29 @@ func (s3Client *s3Client) UploadToStorage(desiredFileName string, filePath strin
     if err != nil {
         return err
     }
+
+	
     defer file.Close()
 
-    // get the file size and read
-    // the file content into a buffer
-    fileInfo, _ := file.Stat()
-    var size = fileInfo.Size()
+
+    fileInfo, err := file.Stat()
+	if err != nil {
+		return err
+	}
+
+	// get the size of the file
+    size := fileInfo.Size()
     buffer := make([]byte, size)
-    file.Read(buffer)
+
+	// read the file contents into a buffer
+    readFileSize, err := file.Read(buffer)
+
+	if readFileSize != int(size) {
+		return errors.New("file not read completely")
+	}
+	if err != nil {
+		return err
+	}
 
 
 	uploadClient := manager.NewUploader(s3Client.client)

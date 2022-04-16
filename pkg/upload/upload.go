@@ -8,11 +8,16 @@ import (
 )
 
 
+var (
+	ErrEmptyStorageType error = errors.New("storage cannot be empty")
+	ErrEmptyFilePath error = errors.New("file path cannot be empty")
+)
+
 
 type uploadResponse struct {
-	statuscode int64
-	message    string
-	err        error
+	Statuscode int64
+	Message    string
+	Err        error
 }
 
 func prepareResp(statuscode int64, message string, err error) (uploadResponse) {
@@ -26,11 +31,11 @@ func prepareResp(statuscode int64, message string, err error) (uploadResponse) {
 // Upload func calls the appropriate method for given storage type in order to upload the given file
 func Upload(storageType string, accountInfo map[string]string, desiredFileName string, filePath string) (uploadResponse) {
 	if storageType == "" {
-		return prepareResp(400,"", errors.New("no storage type specified"))
+		return prepareResp(400,"", ErrEmptyStorageType)
 	}
 
 	if filePath == "" {
-		return prepareResp(400,"", errors.New("no file to upload"))
+		return prepareResp(400,"", ErrEmptyFilePath)
 	}
 
 	switch storageType {
