@@ -24,8 +24,7 @@ func prepareResp(statuscode int64, message string, err error) (uploadResponse) {
 }
 
 // Upload func calls the appropriate method for given storage type in order to upload the given file
-func Upload(storageType string, accountInfo map[string]string, desiredFileName string, filePath string) uploadResponse {
-	fmt.Println("Check")
+func Upload(storageType string, accountInfo map[string]string, desiredFileName string, filePath string) (uploadResponse) {
 	if storageType == "" {
 		return prepareResp(400,"", errors.New("no storage type specified"))
 	}

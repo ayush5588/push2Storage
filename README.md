@@ -1,2 +1,10 @@
 # push2Storage
-Method to upload to different cloud storage such as s3, etc. 
+Package to upload files to cloud storage such as s3. Will be adding support for other cloud storage as well.  
+
+## Need for this
+Even though there are other packages which do the same thing but I thought of having a one simple function which can be used to upload the files to the cloud storage. 
+
+
+## How to Use
+
+See the examples folder 
