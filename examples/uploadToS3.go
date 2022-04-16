@@ -17,7 +17,12 @@ func uploadToS3(w http.ResponseWriter, r *http.Request) {
 	mp["region"] = "<region>"
 
 
-	result := upload.Upload("aws", mp, "random.txt", `full-path-to-file`)
+	result := upload.Upload("aws", mp, "<Name of the file that you want your uploaded file on S3 to be>", `full-path-to-file`)
+	
+	// eg: result := upload.Upload("aws", mp, "requestdata.txt", `/home/user/test.txt`)
+	// The above command will take the file from the given path (/home/user/test.txt), create a new file with name requestdata.txt, copy the data
+	// from the original file to this file and upload the requestdata.txt file to S3. 
+	
 	w.Header().Set("Content-Type", "application/json") 
 	json.NewEncoder(w).Encode(result) 
 
