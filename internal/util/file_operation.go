@@ -9,22 +9,15 @@ import (
 // extractFileName extracts the name of the file along with extension from the given file path
 func extractFileName(filePath string) string {
 
-	cnt := 0
-	for _, ch := range filePath {
-		if ch == '\\' || ch == '/' {
-			cnt = cnt + 1
-		}
-	}
+	lenFilePath := len([]rune(filePath))
 
 	var fileName string
 
-	for _, ch := range filePath {
-		if cnt == 0 {
-			fileName = fileName + string(ch)
-		}
-
-		if ch == '\\' || ch == '/' {
-			cnt = cnt - 1
+	for i := lenFilePath - 1; i >= 0; i-- {
+		if filePath[i] == '\\' || filePath[i] == '/' {
+			break
+		} else {
+			fileName = string(filePath[i]) + fileName
 		}
 	}
 
