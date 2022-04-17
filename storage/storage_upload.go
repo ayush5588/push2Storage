@@ -1,6 +1,5 @@
 package storage
 
-
 type StorageUpload interface {
-	UploadToStorage(string, string) (error) 
+	UploadToStorage(string, string) error
 }
