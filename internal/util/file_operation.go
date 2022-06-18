@@ -6,6 +6,11 @@ import (
 	"os"
 )
 
+const (
+	// ErrFilePathEmpty is an error for filePath not provided in the arguments 
+	ErrFilePathEmpty = "filePath cannot be empty"
+)
+
 // extractFileName extracts the name of the file along with extension from the given file path
 func extractFileName(filePath string) string {
 
@@ -57,7 +62,13 @@ func prepareFileBuffer(file *os.File) ([]byte, error) {
 	return fileBuffer, nil
 }
 
+
+// PrepareFile ...
 func PrepareFile(filePath string) ([]byte, string, error) {
+
+	if filePath == "" {
+		return nil, "", errors.New(ErrFilePathEmpty) 
+	}
 
 	fileContent, err := ioutil.ReadFile(filePath)
 	if err != nil {
