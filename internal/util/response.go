@@ -1,5 +1,6 @@
 package util
 
+// UploadResponse represents the response metadata body
 type UploadResponse struct {
 	Statuscode int64
 	Message    string
@@ -7,6 +8,7 @@ type UploadResponse struct {
 	ErrorMsg   string
 }
 
+// PrepareResp prepares the response with the metadata
 func PrepareResp(statuscode int64, message string, err error, errMsg string) UploadResponse {
 	return UploadResponse{
 		statuscode,
@@ -15,3 +17,4 @@ func PrepareResp(statuscode int64, message string, err error, errMsg string) Upl
 		errMsg,
 	}
 }
+ 

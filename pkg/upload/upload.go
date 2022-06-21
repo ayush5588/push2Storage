@@ -18,7 +18,7 @@ var (
 
 
 
-// Upload func calls the appropriate method for given storage type in order to upload the given file
+// Upload calls the appropriate method for given storage type in order to upload the given file
 func Upload(storageType string, accountInfo map[string]string, filePath string) (util.UploadResponse) {
 	if storageType == "" {
 		return util.PrepareResp(400,"", ErrEmptyStorageType, "storage field cannot be empty")
