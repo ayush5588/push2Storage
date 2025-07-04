@@ -1,17 +1,37 @@
 # push2Storage
-Package to upload files to cloud storage such as s3. Will be adding support for other cloud storage as well.  
 
-## Need for this
-Even though there are other packages which do the same thing but I thought of having a one simple function which can be used to upload the files to the cloud storage. 
+A simple Go package for uploading files to cloud storage providers. Currently supports AWS S3, with more providers coming soon.
 
+## Features
+- Minimal API: Upload files with a single function call
+- Extensible: Support for additional cloud providers planned
 
-## Steps to Use
+## Quick Start
+1. Install:
+   ```sh
+   go get github.com/ayush5588/push2Storage/pkg/upload
+   ```
+2. Import and use:
+   ```go
+   import "github.com/ayush5588/push2Storage/pkg/upload"
 
-- Import the "github.com/ayush5588/push2Storage/pkg/upload" pkg.  
-- Pass the required arguments to the upload.Upload() function. 
+   // Prepare your AWS credentials and config
+   creds := map[string]string{
+       "accessKey":    "<your-access-key>",
+       "secretKeyID":  "<your-secretKeyID>",
+       "bucket":       "<bucket-name>",
+       "region":       "<region>",
+   }
 
-For full example, please see the examples folder. 
+   // Upload a file
+   resp := upload.Upload("aws", creds, "full-path-to-file")
+   fmt.Println(resp)
+   ```
+3. See the `examples/` folder for a complete usage example, including integration with an HTTP server.
 
-## Current cloud storage implementations
- - S3 (AWS)
+## Supported Providers
+- AWS S3
+
+---
+Contributions and feedback are welcome!
 
